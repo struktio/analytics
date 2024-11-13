@@ -1,7 +1,5 @@
 # @strukt-io/analytics
 
-![Logo](https://github.com/struktio/strukt/blob/main/public/strukt_logo.png?raw=true)
-
 A lightweight, privacy-focused analytics package for React web applications.
 
 ## Features
