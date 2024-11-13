@@ -12,16 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '18.x'
+          version: 9
           
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
         
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   publish:
     needs: test
@@ -30,20 +29,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '18.x'
+          version: 9
           registry-url: 'https://registry.npmjs.org'
-          scope: '@your-org'
+          scope: '@strukt-io'
           
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
         
       - name: Build
-        run: npm run build
+        run: pnpm run build
         
       - name: Publish to npm
-        run: npm publish --access restricted
+        run: pnpm publish --access restricted
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
