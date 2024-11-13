@@ -174,9 +174,10 @@ const updateActionBody = function (id, input) {
 const send = function (url, body, options, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield fetch(url, Object.assign(Object.assign({}, body), { credentials: options.ignoreOwnVisits ? 'include' : 'omit' }));
+            let response;
+            response = yield fetch(url, Object.assign(Object.assign({}, body), { credentials: options.ignoreOwnVisits ? 'include' : 'omit' }));
             if (!response.ok) {
-                console.error('Server returned with status', response.status);
+                console.error("Error sending tracker request");
             }
             const { id } = yield response.json();
             if (typeof next === 'function') {
@@ -184,7 +185,7 @@ const send = function (url, body, options, next) {
             }
         }
         catch (error) {
-            console.error('Failed to send request:', error);
+            console.error("Error sending tracker request");
         }
     });
 };
