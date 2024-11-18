@@ -28,7 +28,9 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"prepare": "npm run build",
+		"push": "pnpm version patch && git push",
+		"push-minor": "pnpm version minor && push --",
+		"push-major": "pnpm version major && push --",
 		"test": "IS_TESTING=true vitest",
 		"test:coverage": "IS_TESTING=true vitest run --coverage",
 		"test:ui": "IS_TESTING=true vitest run --ui"

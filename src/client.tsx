@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, createContext, useContext } from 'react';
 import { create, attributes, TrackerOptions } from './tracker';
 
 const isBrowser = typeof window !== 'undefined';
@@ -7,18 +7,21 @@ interface TrackerEnvironment {
 	server: string;
 }
 
+interface TrackerContextValue {
+	instance: ReturnType<typeof create> | undefined;
+}
 
-/**
- * The instance .record creates a record on the server and 
- * creates an interval function to update the record every 2 seconds. This
- * interval function is stopped when the component unmounts, when the user
- * navigates away from the page, or when the pathname changes.
- * 
- * The routes that are used are defined in the TrackerOptions must return an Id
- * @param {string | URL} pathname - The pathname to track.
- * @param {TrackerOptions} options - The options to pass to the tracker.
- */
-export const Analytics: React.FC<{ pathname: string | URL, options: TrackerOptions }> = ({ pathname, options }) => {
+const TrackerContext = createContext<TrackerContextValue | undefined>(undefined);
+
+export const useTracker = () => {
+	const context = useContext(TrackerContext);
+	if (!context) {
+		throw new Error('useTracker must be used within a TrackerProvider');
+	}
+	return context.instance;
+};
+
+export const TrackerProvider: React.FC<{ pathname: string | URL, options: TrackerOptions, children: React.ReactNode }> = ({ pathname, options, children }) => {
 	const instance = useMemo(() => {
 		if (isBrowser === false) return;
 
@@ -26,7 +29,6 @@ export const Analytics: React.FC<{ pathname: string | URL, options: TrackerOptio
 	}, [options.detailed, options.ignoreLocalhost, options.ignoreOwnVisits]);
 
 	useEffect(() => {
-
 		if (instance == null) {
 			console.warn('Skipped record creation because useTracker has been called in a non-browser environment');
 			return;
@@ -45,9 +47,6 @@ export const Analytics: React.FC<{ pathname: string | URL, options: TrackerOptio
 		const att = attributes(options.detailed);
 		const url = new URL(pathname, location.href);
 
-		/*
-
-		*/
 		return instance.record(options.projectId, {
 			...att,
 			siteLocation: url.href,
@@ -55,8 +54,10 @@ export const Analytics: React.FC<{ pathname: string | URL, options: TrackerOptio
 	}, [instance, pathname]);
 
 	return (
-		<div data-strukt-tracker-id={options.projectId} />
-	)
+		<TrackerContext.Provider value={{ instance }}>
+			{children}
+		</TrackerContext.Provider>
+	);
 };
 
 export type { TrackerEnvironment, TrackerOptions }; 
