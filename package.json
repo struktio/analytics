@@ -1,6 +1,6 @@
 {
 	"name": "@strukt-io/analytics",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"authors": [
 		"Tobias Reich <tobias@electerious.com>",
 		"Matt Schroder <matt@strukt.io>"
