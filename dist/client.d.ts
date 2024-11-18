@@ -1,8 +1,9 @@
-import React from 'react';
-import { TrackerOptions } from './tracker';
-interface TrackerEnvironment {
-    server: string;
+import React from "react";
+import { create, TrackerOptions } from "./tracker";
+interface TrackerContextValue {
+    instance: ReturnType<typeof create> | undefined;
 }
+declare const TrackerContext: React.Context<TrackerContextValue | undefined>;
 export declare const useTracker: () => {
     record: (id: string, attrs?: import("./tracker").DefaultData | (import("./tracker").DefaultData & import("./tracker").DetailedData), next?: ((recordId: string) => void) | undefined) => {
         stop: () => void;
@@ -18,4 +19,4 @@ export declare const TrackerProvider: React.FC<{
     options: TrackerOptions;
     children: React.ReactNode;
 }>;
-export type { TrackerEnvironment, TrackerOptions };
+export type { TrackerOptions, TrackerContextValue, TrackerContext };

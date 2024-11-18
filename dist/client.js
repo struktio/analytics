@@ -4,12 +4,12 @@ exports.TrackerProvider = exports.useTracker = void 0;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const tracker_1 = require("./tracker");
-const isBrowser = typeof window !== 'undefined';
+const isBrowser = typeof window !== "undefined";
 const TrackerContext = (0, react_1.createContext)(undefined);
 const useTracker = () => {
     const context = (0, react_1.useContext)(TrackerContext);
     if (!context) {
-        throw new Error('useTracker must be used within a TrackerProvider');
+        throw new Error("useTracker must be used within a TrackerProvider");
     }
     return context.instance;
 };
@@ -22,13 +22,12 @@ const TrackerProvider = ({ pathname, options, children }) => {
     }, [options.detailed, options.ignoreLocalhost, options.ignoreOwnVisits]);
     (0, react_1.useEffect)(() => {
         if (instance == null) {
-            console.warn('Skipped record creation because useTracker has been called in a non-browser environment');
+            console.warn("Skipped record creation because useTracker has been called in a non-browser environment");
             return;
         }
-        const hasPathname = (pathname != null &&
-            pathname !== '');
+        const hasPathname = pathname != null && pathname !== "";
         if (hasPathname === false) {
-            console.warn('Skipped record creation because useTracker has been called without pathname');
+            console.warn("Skipped record creation because useTracker has been called without pathname");
             return;
         }
         const att = (0, tracker_1.attributes)(options.detailed);
