@@ -1,5 +1,5 @@
 import { render, act } from '@testing-library/react';
-import { Analytics } from '../src/client';
+import { TrackerProvider } from '../src/client';
 import { create } from '../src/tracker';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import React from 'react';
@@ -29,7 +29,7 @@ describe('Analytics Component', () => {
 
 	it('should render with project id', () => {
 		const { container } = render(
-			<Analytics
+			<TrackerProvider
 				pathname="/test"
 				options={{
 					projectId: 'test-project',
@@ -39,7 +39,9 @@ describe('Analytics Component', () => {
 					recordPath: '/api/event/record',
 					actionPath: '/api/event/action',
 				}}
-			/>
+			>
+				<div>Test</div>
+			</TrackerProvider>
 		);
 
 		expect(container.querySelector('[data-strukt-tracker-id="test-project"]')).toBeTruthy();
@@ -47,7 +49,7 @@ describe('Analytics Component', () => {
 
 	it('should create tracker instance and record', () => {
 		render(
-			<Analytics
+			<TrackerProvider
 				pathname="/test"
 				options={{
 					projectId: 'test-project',
@@ -57,7 +59,9 @@ describe('Analytics Component', () => {
 					recordPath: '/api/event/record',
 					actionPath: '/api/event/action',
 				}}
-			/>
+			>
+				<div>Test</div>
+			</TrackerProvider>
 		);
 
 		expect(create).toHaveBeenCalled();
@@ -68,7 +72,7 @@ describe('Analytics Component', () => {
 
 	it('should cleanup on unmount', () => {
 		const { unmount } = render(
-			<Analytics
+			<TrackerProvider
 				pathname="/test"
 				options={{
 					projectId: 'test-project',
@@ -78,7 +82,9 @@ describe('Analytics Component', () => {
 					recordPath: '/api/event/record',
 					actionPath: '/api/event/action',
 				}}
-			/>
+			>
+				<div>Test</div>
+			</TrackerProvider>
 		);
 
 		unmount();

@@ -55,7 +55,9 @@ export const TrackerProvider: React.FC<{ pathname: string | URL, options: Tracke
 
 	return (
 		<TrackerContext.Provider value={{ instance }}>
-			{children}
+			<div data-strukt-tracker-id={options.projectId}>
+				{children}
+			</div>
 		</TrackerContext.Provider>
 	);
 };
