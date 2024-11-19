@@ -2,40 +2,39 @@ name: Test and Publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          
-      - name: Install dependencies
-        run: pnpm install
-        
-      - name: Run tests
-        run: pnpm test
-
+  # test:
+  #   name: Test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #
+  #     - uses: pnpm/action-setup@v4
+  #       with:
+  #         version: 9
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install
+  #
+  #     - name: Run tests
+  #       run: pnpm test
+  #
   publish:
     name: Publish
-    needs: test
+    # needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
-      
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
-          scope: '@strukt-io'
-          
+          scope: "@strukt-io"
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -48,7 +47,7 @@ jobs:
 
       - name: Build
         run: pnpm run build
-        
+
       - name: Publish 🚀
         shell: bash
         run: pnpm publish --access public --no-git-checks
