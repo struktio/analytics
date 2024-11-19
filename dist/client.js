@@ -14,11 +14,11 @@ const useTracker = () => {
     return context.instance;
 };
 exports.useTracker = useTracker;
-const TrackerProvider = ({ pathname, options, children, projectId, sessionId }) => {
+const TrackerProvider = ({ pathname, options, children, session }) => {
     const instance = (0, react_1.useMemo)(() => {
         if (isBrowser === false)
             return;
-        return (0, tracker_1.create)(projectId, sessionId, options);
+        return (0, tracker_1.create)(session, options);
     }, [options.detailed, options.ignoreLocalhost, options.ignoreOwnVisits]);
     (0, react_1.useEffect)(() => {
         if (instance == null) {
@@ -40,13 +40,13 @@ const TrackerProvider = ({ pathname, options, children, projectId, sessionId }) 
             return;
         const handleBeforeUnload = () => {
             // You can add your cleanup function here
-            instance.cleanup(projectId, sessionId); // Assuming your tracker instance has a cleanup method
+            instance.cleanup(session); // Assuming your tracker instance has a cleanup method
         };
-        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener("beforeunload", handleBeforeUnload);
         return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     }, [instance]);
-    return ((0, jsx_runtime_1.jsx)(TrackerContext.Provider, Object.assign({ value: { instance } }, { children: (0, jsx_runtime_1.jsx)("div", Object.assign({ "data-strukt-tracker-id": projectId }, { children: children })) })));
+    return ((0, jsx_runtime_1.jsx)(TrackerContext.Provider, Object.assign({ value: { instance } }, { children: (0, jsx_runtime_1.jsx)("div", Object.assign({ "data-strukt-session-id": session }, { children: children })) })));
 };
 exports.TrackerProvider = TrackerProvider;

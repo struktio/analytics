@@ -99,14 +99,13 @@ exports.attributes = attributes;
  * @param {Object} input - Data that should be transferred to the server.
  * @returns {Object} Create action body.
  */
-const createCleanupBody = function (projectId, sessionId) {
+const createCleanupBody = function (sessionId) {
     return {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            id: projectId,
             sessionId,
         }),
         credentials: "include",
@@ -118,14 +117,13 @@ const createCleanupBody = function (projectId, sessionId) {
  * @param {Object} input - Data that should be transferred to the server.
  * @returns {Object} Create record body.
  */
-const createRecordBody = function (id, session, input) {
+const createRecordBody = function (session, input) {
     return {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            id,
             session,
             input,
         }),
@@ -226,7 +224,7 @@ const detect = function () {
     const options = elem.getAttribute("data-strukt-opts") || "{}";
     if (server == null || id == null)
         return;
-    (0, exports.create)("tset", "test2", JSON.parse(options)).record();
+    (0, exports.create)("test2", JSON.parse(options)).record();
 };
 exports.detect = detect;
 /**
@@ -243,11 +241,12 @@ const endpoint = function (server) {
 };
 /**
  * Creates a new instance.
- * @param {String} server - URL of the strukt server.
  * @param {?Object} options
+ * @param {String} sessionId The session ID can be used to track what a user does for the full
+ * lifecycle of their time on the site, can be ommited without issue
  * @returns {Object} instance
  */
-const create = function (projectId, sessionId = undefined, options) {
+const create = function (sessionId = undefined, options) {
     options.recordPath = endpoint(options.server) + options.recordPath;
     options.actionPath = endpoint(options.server) + options.actionPath;
     const noop = () => { };
@@ -278,7 +277,7 @@ const create = function (projectId, sessionId = undefined, options) {
         const stop = () => {
             isStopped = true;
         };
-        send(options.recordPath, createRecordBody(projectId, sessionId, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true }, (recordId) => {
+        send(options.recordPath, createRecordBody(sessionId, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true }, (recordId) => {
             var _a;
             console.log("record", recordId);
             if (isFakeId(recordId) === true) {
@@ -352,9 +351,9 @@ const create = function (projectId, sessionId = undefined, options) {
         });
     };
     // Updates an action
-    const _cleanup = (projectId, sessionId) => {
+    const _cleanup = (sessionId) => {
         var _a;
-        send(options.recordPath, createCleanupBody(projectId, sessionId), {
+        send(options.recordPath, createCleanupBody(sessionId), {
             ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true,
         });
     };

@@ -7,8 +7,7 @@ declare const TrackerContext: React.Context<TrackerContextValue | undefined>;
 export declare const useTracker: () => import("./tracker").TrackerInstance | undefined;
 export declare const TrackerProvider: React.FC<{
     pathname: string | URL;
-    projectId: string;
-    sessionId: string;
+    session: string;
     options: TrackerOptions;
     children: React.ReactNode;
 }>;

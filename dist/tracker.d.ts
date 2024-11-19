@@ -1,10 +1,5 @@
 export interface TrackerOptions {
     /**
-     * The session ID can be used to track what a user does for the full
-     * lifecycle of their time on the site, can be ommited without issue
-     */
-    sessionId?: string;
-    /**
      * The root URL of the http server.
      * For example: `https://analytics.strukt.io`.
      */
@@ -79,12 +74,13 @@ export interface TrackerInstance {
     };
     action: (eventId: string, attributes: TrackerAttributes, next?: (actionId: string) => void) => void;
     updateAction: (actionId: string, attributes: TrackerAttributes) => void;
-    cleanup: (projectId: string, sessionId: string) => void;
+    cleanup: (sessionId: string) => void;
 }
 /**
  * Creates a new instance.
- * @param {String} server - URL of the strukt server.
  * @param {?Object} options
+ * @param {String} sessionId The session ID can be used to track what a user does for the full
+ * lifecycle of their time on the site, can be ommited without issue
  * @returns {Object} instance
  */
-export declare const create: (projectId: string, sessionId: string | undefined, options: TrackerOptions) => TrackerInstance;
+export declare const create: (sessionId: string | undefined, options: TrackerOptions) => TrackerInstance;

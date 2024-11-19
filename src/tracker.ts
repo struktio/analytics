@@ -3,74 +3,69 @@ import platform from "platform";
 const isBrowser = typeof window !== "undefined";
 
 /*
-	Options for the tracker.	
+  Options for the tracker.	
 */
 export interface TrackerOptions {
-	/**
-	 * The session ID can be used to track what a user does for the full
-	 * lifecycle of their time on the site, can be ommited without issue
-	 */
-	sessionId?: string;
-	/**
-	 * The root URL of the http server.
-	 * For example: `https://analytics.strukt.io`.
-	 */
-	server?: string;
-	/**
-	 * Whether to include detailed data.
-	 */
-	detailed?: boolean;
-	/**
-	 * Whether to ignore localhost.
-	 */
-	ignoreLocalhost?: boolean;
-	/**
-	 * Whether to ignore own visits.
-	 */
-	ignoreOwnVisits?: boolean;
-	/**
-	 * The path to the record endpoint on the server, must accept POST and PUT requests.
-	 * For example: `/api/event/record`.
-	 * should return { id: string } where id is the id of the record that was created.
-	 */
-	recordPath: string;
-	/**
-	 * The path to the action endpoint on the server, must accept POST and PUT requests.
-	 * should return { id: string } where id is the id of the action that was created.
-	 */
-	actionPath: string;
-	/**
-	 * The interval to update the record on the server.
-	 */
-	pollingInterval?: number;
+  /**
+   * The root URL of the http server.
+   * For example: `https://analytics.strukt.io`.
+   */
+  server?: string;
+  /**
+   * Whether to include detailed data.
+   */
+  detailed?: boolean;
+  /**
+   * Whether to ignore localhost.
+   */
+  ignoreLocalhost?: boolean;
+  /**
+   * Whether to ignore own visits.
+   */
+  ignoreOwnVisits?: boolean;
+  /**
+   * The path to the record endpoint on the server, must accept POST and PUT requests.
+   * For example: `/api/event/record`.
+   * should return { id: string } where id is the id of the record that was created.
+   */
+  recordPath: string;
+  /**
+   * The path to the action endpoint on the server, must accept POST and PUT requests.
+   * should return { id: string } where id is the id of the action that was created.
+   */
+  actionPath: string;
+  /**
+   * The interval to update the record on the server.
+   */
+  pollingInterval?: number;
 }
 
 // Add interfaces for the various data structures
 export interface DetailedData {
-	siteLanguage: string;
-	screenWidth: number;
-	screenHeight: number;
-	screenColorDepth: number;
-	deviceName?: string;
-	deviceManufacturer?: string;
-	osName?: string;
-	osVersion?: string;
-	browserName?: string;
-	browserVersion?: string;
-	browserWidth: number;
-	browserHeight: number;
+  siteLanguage: string;
+  screenWidth: number;
+  screenHeight: number;
+  screenColorDepth: number;
+  deviceName?: string;
+  deviceManufacturer?: string;
+  osName?: string;
+  osVersion?: string;
+  browserName?: string;
+  browserVersion?: string;
+  browserWidth: number;
+  browserHeight: number;
 }
 
 export interface DefaultData {
-	siteLocation: string;
-	siteReferrer: string;
-	source: string | undefined;
+  siteLocation: string;
+  siteReferrer: string;
+  source: string | undefined;
 }
 
 export type TrackerAttributes = DetailedData & DefaultData;
 
 interface SendOptions {
-	ignoreOwnVisits: boolean;
+  ignoreOwnVisits: boolean;
 }
 
 /**
@@ -79,12 +74,12 @@ interface SendOptions {
  * @returns {Boolean} isLocalhost
  */
 const isLocalhost = function (hostname: string) {
-	return (
-		hostname === "" ||
-		hostname === "localhost" ||
-		hostname === "127.0.0.1" ||
-		hostname === "::1"
-	);
+  return (
+    hostname === "" ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1"
+  );
 };
 
 /**
@@ -94,7 +89,7 @@ const isLocalhost = function (hostname: string) {
  * @returns {Boolean} isBot
  */
 const isBot = function (userAgent: string) {
-	return /bot|crawler|spider|crawling/i.test(userAgent);
+  return /bot|crawler|spider|crawling/i.test(userAgent);
 };
 
 /**
@@ -103,7 +98,7 @@ const isBot = function (userAgent: string) {
  * @returns {Boolean} isFakeId
  */
 const isFakeId = function (id: string) {
-	return id === "88888888-8888-8888-8888-888888888888";
+  return id === "88888888-8888-8888-8888-888888888888";
 };
 
 /**
@@ -111,7 +106,7 @@ const isFakeId = function (id: string) {
  * @returns {boolean}
  */
 const isInBackground = function () {
-	return document.visibilityState === "hidden";
+  return document.visibilityState === "hidden";
 };
 
 /**
@@ -119,9 +114,9 @@ const isInBackground = function () {
  * @returns {String} source
  */
 const source = function () {
-	const source = (location.search.split(`source=`)[1] || "").split("&")[0];
+  const source = (location.search.split(`source=`)[1] || "").split("&")[0];
 
-	return source === "" ? undefined : source;
+  return source === "" ? undefined : source;
 };
 
 /**
@@ -132,39 +127,39 @@ const source = function () {
  * @returns {Object} attributes - User-related information.
  */
 export const attributes = function (
-	detailed = false,
+  detailed = false,
 ): (DefaultData & DetailedData) | DefaultData {
-	const defaultData: DefaultData = {
-		siteLocation: window.location.href,
-		siteReferrer: document.referrer,
-		source: source(),
-	};
+  const defaultData: DefaultData = {
+    siteLocation: window.location.href,
+    siteReferrer: document.referrer,
+    source: source(),
+  };
 
-	const detailedData: DetailedData = {
-		siteLanguage: (navigator.language || navigator.language).slice(0, 2),
-		screenWidth: screen.width,
-		screenHeight: screen.height,
-		screenColorDepth: screen.colorDepth,
-		deviceName: platform.product,
-		deviceManufacturer: platform.manufacturer,
-		osName: platform.os?.family,
-		osVersion: platform.os?.version,
-		browserName: platform.name,
-		browserVersion: platform.version,
-		browserWidth: window.outerWidth,
-		browserHeight: window.outerHeight,
-	};
+  const detailedData: DetailedData = {
+    siteLanguage: (navigator.language || navigator.language).slice(0, 2),
+    screenWidth: screen.width,
+    screenHeight: screen.height,
+    screenColorDepth: screen.colorDepth,
+    deviceName: platform.product,
+    deviceManufacturer: platform.manufacturer,
+    osName: platform.os?.family,
+    osVersion: platform.os?.version,
+    browserName: platform.name,
+    browserVersion: platform.version,
+    browserWidth: window.outerWidth,
+    browserHeight: window.outerHeight,
+  };
 
-	if (detailed === true) {
-		let combinedData: DefaultData & DetailedData = {
-			...defaultData,
-			...detailedData,
-		};
+  if (detailed === true) {
+    let combinedData: DefaultData & DetailedData = {
+      ...defaultData,
+      ...detailedData,
+    };
 
-		return combinedData;
-	}
+    return combinedData;
+  }
 
-	return defaultData;
+  return defaultData;
 };
 
 /**
@@ -173,21 +168,17 @@ export const attributes = function (
  * @param {Object} input - Data that should be transferred to the server.
  * @returns {Object} Create action body.
  */
-const createCleanupBody = function (
-	projectId: string,
-	sessionId: string,
-): RequestInit {
-	return {
-		method: "DELETE",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			id: projectId,
-			sessionId,
-		}),
-		credentials: "include",
-	};
+const createCleanupBody = function (sessionId: string): RequestInit {
+  return {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sessionId,
+    }),
+    credentials: "include",
+  };
 };
 
 /**
@@ -197,22 +188,20 @@ const createCleanupBody = function (
  * @returns {Object} Create record body.
  */
 const createRecordBody = function (
-	id: string,
-	session: string | undefined,
-	input: Record<string, any>,
+  session: string | undefined,
+  input: Record<string, any>,
 ): RequestInit {
-	return {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			id,
-			session,
-			input,
-		}),
-		credentials: "include",
-	};
+  return {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      session,
+      input,
+    }),
+    credentials: "include",
+  };
 };
 
 /**
@@ -221,14 +210,14 @@ const createRecordBody = function (
  * @returns {Object} Update record body.
  */
 const updateRecordBody = function (id: string): RequestInit {
-	return {
-		method: "PUT",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ id }),
-		credentials: "include",
-	};
+  return {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id }),
+    credentials: "include",
+  };
 };
 
 /**
@@ -238,22 +227,22 @@ const updateRecordBody = function (id: string): RequestInit {
  * @returns {Object} Create action body.
  */
 const createActionBody = function (
-	id: string,
-	session: string | undefined,
-	input: Record<string, any>,
+  id: string,
+  session: string | undefined,
+  input: Record<string, any>,
 ): RequestInit {
-	return {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			id,
-			session,
-			input,
-		}),
-		credentials: "include",
-	};
+  return {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id,
+      session,
+      input,
+    }),
+    credentials: "include",
+  };
 };
 
 /**
@@ -263,20 +252,20 @@ const createActionBody = function (
  * @returns {Object} Update action body.
  */
 const updateActionBody = function (
-	id: string,
-	input: Record<string, any>,
+  id: string,
+  input: Record<string, any>,
 ): RequestInit {
-	return {
-		method: "PUT",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			id,
-			input,
-		}),
-		credentials: "include",
-	};
+  return {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id,
+      input,
+    }),
+    credentials: "include",
+  };
 };
 
 /**
@@ -289,30 +278,30 @@ const updateActionBody = function (
  * @param {?Function} next - The callback that handles the response. Receives the following properties: json.
  */
 const send = async function (
-	url: string,
-	body: RequestInit,
-	options: SendOptions,
-	next?: (id: string) => void,
+  url: string,
+  body: RequestInit,
+  options: SendOptions,
+  next?: (id: string) => void,
 ): Promise<void> {
-	try {
-		let response: Response;
-		response = await fetch(url, {
-			...body,
-			credentials: options.ignoreOwnVisits ? "include" : "omit",
-		});
+  try {
+    let response: Response;
+    response = await fetch(url, {
+      ...body,
+      credentials: options.ignoreOwnVisits ? "include" : "omit",
+    });
 
-		if (!response.ok) {
-			console.error("Error sending tracker request");
-		}
+    if (!response.ok) {
+      console.error("Error sending tracker request");
+    }
 
-		const { id } = await response.json();
+    const { id } = await response.json();
 
-		if (typeof next === "function") {
-			next(id);
-		}
-	} catch (error) {
-		console.error("Error sending tracker request");
-	}
+    if (typeof next === "function") {
+      next(id);
+    }
+  } catch (error) {
+    console.error("Error sending tracker request");
+  }
 };
 
 /**
@@ -320,16 +309,16 @@ const send = async function (
  * Fails silently.
  */
 export const detect = function () {
-	const elem = document.querySelector("[data-strukt-domain-id]");
+  const elem = document.querySelector("[data-strukt-domain-id]");
 
-	if (elem == null) return;
+  if (elem == null) return;
 
-	const server = elem.getAttribute("data-strukt-server") || "";
-	const id = elem.getAttribute("data-strukt-tracker-id");
-	const options = elem.getAttribute("data-strukt-opts") || "{}";
+  const server = elem.getAttribute("data-strukt-server") || "";
+  const id = elem.getAttribute("data-strukt-tracker-id");
+  const options = elem.getAttribute("data-strukt-opts") || "{}";
 
-	if (server == null || id == null) return;
-	create("tset", "test2", JSON.parse(options)).record();
+  if (server == null || id == null) return;
+  create("test2", JSON.parse(options)).record();
 };
 
 /**
@@ -338,201 +327,197 @@ export const detect = function () {
  * @returns {String} endpoint - URL to the GraphQL endpoint of the strukt server.
  */
 const endpoint = function (server?: string): string {
-	if (server == undefined) return "";
-	const hasTrailingSlash = server.slice(-1) === "/";
-	const baseUrl = server + (hasTrailingSlash === true ? "" : "/") + "";
-	return baseUrl;
+  if (server == undefined) return "";
+  const hasTrailingSlash = server.slice(-1) === "/";
+  const baseUrl = server + (hasTrailingSlash === true ? "" : "/") + "";
+  return baseUrl;
 };
 
-
 export interface TrackerInstance {
-	record: (
-		attributes?: TrackerAttributes,
-		next?: (recordId: string) => void,
-	) => {
-		stop: () => void;
-	};
-	updateRecord: (recordId: string) => {
-		stop: () => void;
-	};
-	action: (
-		eventId: string,
-		attributes: TrackerAttributes,
-		next?: (actionId: string) => void,
-	) => void;
-	updateAction: (actionId: string, attributes: TrackerAttributes) => void;
-	cleanup: (projectId: string, sessionId: string) => void;
+  record: (
+    attributes?: TrackerAttributes,
+    next?: (recordId: string) => void,
+  ) => {
+    stop: () => void;
+  };
+  updateRecord: (recordId: string) => {
+    stop: () => void;
+  };
+  action: (
+    eventId: string,
+    attributes: TrackerAttributes,
+    next?: (actionId: string) => void,
+  ) => void;
+  updateAction: (actionId: string, attributes: TrackerAttributes) => void;
+  cleanup: (sessionId: string) => void;
 }
 /**
  * Creates a new instance.
- * @param {String} server - URL of the strukt server.
  * @param {?Object} options
+ * @param {String} sessionId The session ID can be used to track what a user does for the full
+ * lifecycle of their time on the site, can be ommited without issue
  * @returns {Object} instance
  */
 export const create = function (
-	projectId: string,
-	sessionId: string | undefined = undefined,
-	options: TrackerOptions,
+  sessionId: string | undefined = undefined,
+  options: TrackerOptions,
 ): TrackerInstance {
-	options.recordPath = endpoint(options.server) + options.recordPath;
-	options.actionPath = endpoint(options.server) + options.actionPath;
-	const noop = () => { };
+  options.recordPath = endpoint(options.server) + options.recordPath;
+  options.actionPath = endpoint(options.server) + options.actionPath;
+  const noop = () => {};
 
-	// Fake instance when strukt ignores you
-	const fakeInstance = {
-		record: () => ({ stop: noop }),
-		updateRecord: () => ({ stop: noop }),
-		action: noop,
-		updateAction: noop,
-		cleanup: noop,
-	};
+  // Fake instance when strukt ignores you
+  const fakeInstance = {
+    record: () => ({ stop: noop }),
+    updateRecord: () => ({ stop: noop }),
+    action: noop,
+    updateAction: noop,
+    cleanup: noop,
+  };
 
-	if (
-		options.ignoreLocalhost === true &&
-		isLocalhost(location.hostname) === true
-	) {
-		console.warn("strukt ignores you because you are on localhost");
-		return fakeInstance;
-	}
+  if (
+    options.ignoreLocalhost === true &&
+    isLocalhost(location.hostname) === true
+  ) {
+    console.warn("strukt ignores you because you are on localhost");
+    return fakeInstance;
+  }
 
-	if (isBot(navigator.userAgent) === true) {
-		console.warn("strukt ignores you because you are a bot");
-		return fakeInstance;
-	}
+  if (isBot(navigator.userAgent) === true) {
+    console.warn("strukt ignores you because you are a bot");
+    return fakeInstance;
+  }
 
-	// Creates a new record on the server and updates the record
-	// evry x seconds to track the duration of the visit. Tries to use
-	// the default attributes when there're no custom attributes defined.
-	const _record = (
-		attrs = attributes(options?.detailed),
-		next?: (recordId: string) => void,
-	) => {
-		// Function to stop updating the record
-		let isStopped = false;
-		const stop = () => {
-			isStopped = true;
-		};
+  // Creates a new record on the server and updates the record
+  // evry x seconds to track the duration of the visit. Tries to use
+  // the default attributes when there're no custom attributes defined.
+  const _record = (
+    attrs = attributes(options?.detailed),
+    next?: (recordId: string) => void,
+  ) => {
+    // Function to stop updating the record
+    let isStopped = false;
+    const stop = () => {
+      isStopped = true;
+    };
 
-		send(
-			options.recordPath,
-			createRecordBody(projectId, sessionId, attrs),
-			{ ignoreOwnVisits: options?.ignoreOwnVisits ?? true },
-			(recordId: string) => {
-				console.log("record", recordId);
-				if (isFakeId(recordId) === true) {
-					return console.warn(
-						"strukt ignores you because this is your own site",
-					);
-				}
+    send(
+      options.recordPath,
+      createRecordBody(sessionId, attrs),
+      { ignoreOwnVisits: options?.ignoreOwnVisits ?? true },
+      (recordId: string) => {
+        console.log("record", recordId);
+        if (isFakeId(recordId) === true) {
+          return console.warn(
+            "strukt ignores you because this is your own site",
+          );
+        }
 
-				const interval = setInterval(() => {
-					if (isStopped === true) {
-						clearInterval(interval);
-						return;
-					}
+        const interval = setInterval(() => {
+          if (isStopped === true) {
+            clearInterval(interval);
+            return;
+          }
 
-					if (isInBackground() === true) return;
+          if (isInBackground() === true) return;
 
-					send(options.recordPath, updateRecordBody(recordId), {
-						ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
-					});
-				}, options.pollingInterval ?? 2000);
+          send(options.recordPath, updateRecordBody(recordId), {
+            ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
+          });
+        }, options.pollingInterval ?? 2000);
 
-				if (typeof next === "function") {
-					return next(recordId);
-				}
-			},
-		);
+        if (typeof next === "function") {
+          return next(recordId);
+        }
+      },
+    );
 
-		return { stop };
-	};
+    return { stop };
+  };
 
-	// Updates a record very x seconds to track the duration of the visit
-	const _updateRecord = (recordId: string) => {
-		// Function to stop updating the record
-		let isStopped = false;
-		const stop = () => {
-			isStopped = true;
-		};
+  // Updates a record very x seconds to track the duration of the visit
+  const _updateRecord = (recordId: string) => {
+    // Function to stop updating the record
+    let isStopped = false;
+    const stop = () => {
+      isStopped = true;
+    };
 
-		console.log("updateRecord", recordId);
-		if (isFakeId(recordId) === true) {
-			console.warn("strukt ignores you because this is your own site");
-			return { stop };
-		}
+    console.log("updateRecord", recordId);
+    if (isFakeId(recordId) === true) {
+      console.warn("strukt ignores you because this is your own site");
+      return { stop };
+    }
 
-		const interval = setInterval(() => {
-			if (isStopped === true) {
-				clearInterval(interval);
-				return;
-			}
+    const interval = setInterval(() => {
+      if (isStopped === true) {
+        clearInterval(interval);
+        return;
+      }
 
-			if (isInBackground() === true) return;
+      if (isInBackground() === true) return;
 
-			send(options.recordPath, updateRecordBody(recordId), {
-				ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
-			});
-		}, options.pollingInterval ?? 15000);
+      send(options.recordPath, updateRecordBody(recordId), {
+        ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
+      });
+    }, options.pollingInterval ?? 15000);
 
-		return { stop };
-	};
+    return { stop };
+  };
 
-	// Creates a new action on the server
-	const _action = (
-		actionId: string,
-		attrs: Record<string, any>,
-		next?: (actionId: string) => void,
-	) => {
-		send(
-			options.actionPath,
-			createActionBody(actionId, sessionId, attrs),
-			{ ignoreOwnVisits: options?.ignoreOwnVisits ?? true },
-			(actionId: string) => {
-				if (isFakeId(actionId) === true) {
-					return console.warn(
-						"strukt ignores you because this is your own site",
-					);
-				}
+  // Creates a new action on the server
+  const _action = (
+    actionId: string,
+    attrs: Record<string, any>,
+    next?: (actionId: string) => void,
+  ) => {
+    send(
+      options.actionPath,
+      createActionBody(actionId, sessionId, attrs),
+      { ignoreOwnVisits: options?.ignoreOwnVisits ?? true },
+      (actionId: string) => {
+        if (isFakeId(actionId) === true) {
+          return console.warn(
+            "strukt ignores you because this is your own site",
+          );
+        }
 
-				if (typeof next === "function") {
-					return next(actionId);
-				}
-			},
-		);
-	};
+        if (typeof next === "function") {
+          return next(actionId);
+        }
+      },
+    );
+  };
 
-	// Updates an action
-	const _updateAction = (actionId: string, attrs: Record<string, any>) => {
-		if (isFakeId(actionId) === true) {
-			return console.warn("strukt ignores you because this is your own site");
-		}
+  // Updates an action
+  const _updateAction = (actionId: string, attrs: Record<string, any>) => {
+    if (isFakeId(actionId) === true) {
+      return console.warn("strukt ignores you because this is your own site");
+    }
 
-		send(options.actionPath, updateActionBody(actionId, attrs), {
-			ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
-		});
-	};
+    send(options.actionPath, updateActionBody(actionId, attrs), {
+      ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
+    });
+  };
 
-	// Updates an action
-	const _cleanup = (projectId: string, sessionId: string) => {
+  // Updates an action
+  const _cleanup = (sessionId: string) => {
+    send(options.recordPath, createCleanupBody(sessionId), {
+      ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
+    });
+  };
 
-		send(options.recordPath, createCleanupBody(projectId, sessionId), {
-			ignoreOwnVisits: options?.ignoreOwnVisits ?? true,
-		});
-	};
-
-
-
-	// Return the real instance
-	return {
-		record: _record,
-		updateRecord: _updateRecord,
-		action: _action,
-		updateAction: _updateAction,
-		cleanup: _cleanup,
-	};
+  // Return the real instance
+  return {
+    record: _record,
+    updateRecord: _updateRecord,
+    action: _action,
+    updateAction: _updateAction,
+    cleanup: _cleanup,
+  };
 };
 
 // Only run strukt automatically when executed in a browser environment
 if (isBrowser === true) {
-	detect();
+  detect();
 }
