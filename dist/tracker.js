@@ -14,14 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.create = exports.detect = exports.attributes = void 0;
 const platform_1 = __importDefault(require("platform"));
-const isBrowser = typeof window !== 'undefined';
+const isBrowser = typeof window !== "undefined";
 /**
  * Determines if a host is a localhost.
  * @param {String} hostname - Hostname that should be tested.
  * @returns {Boolean} isLocalhost
  */
 const isLocalhost = function (hostname) {
-    return hostname === '' || hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+    return (hostname === "" ||
+        hostname === "localhost" ||
+        hostname === "127.0.0.1" ||
+        hostname === "::1");
 };
 /**
  * Determines if user agent is a bot. Approach is to get most bots, assuming other bots don't run JS.
@@ -30,7 +33,7 @@ const isLocalhost = function (hostname) {
  * @returns {Boolean} isBot
  */
 const isBot = function (userAgent) {
-    return (/bot|crawler|spider|crawling/i).test(userAgent);
+    return /bot|crawler|spider|crawling/i.test(userAgent);
 };
 /**
  * Checks if an id is a fake id. This is the case when strukt ignores you because of the `ackee_ignore` cookie.
@@ -38,22 +41,22 @@ const isBot = function (userAgent) {
  * @returns {Boolean} isFakeId
  */
 const isFakeId = function (id) {
-    return id === '88888888-8888-8888-8888-888888888888';
+    return id === "88888888-8888-8888-8888-888888888888";
 };
 /**
  * Checks if the website is in background (e.g. user has minimzed or switched tabs).
  * @returns {boolean}
  */
 const isInBackground = function () {
-    return document.visibilityState === 'hidden';
+    return document.visibilityState === "hidden";
 };
 /**
  * Get the optional source parameter.
  * @returns {String} source
  */
 const source = function () {
-    const source = (location.search.split(`source=`)[1] || '').split('&')[0];
-    return source === '' ? undefined : source;
+    const source = (location.search.split(`source=`)[1] || "").split("&")[0];
+    return source === "" ? undefined : source;
 };
 /**
  * Gathers all platform-, screen- and user-related information.
@@ -91,22 +94,42 @@ const attributes = function (detailed = false) {
 };
 exports.attributes = attributes;
 /**
+ * Creates an object with a query and variables property to create an action on the server.
+ * @param {String} id - Id of the action.
+ * @param {Object} input - Data that should be transferred to the server.
+ * @returns {Object} Create action body.
+ */
+const createCleanupBody = function (projectId, sessionId) {
+    return {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            id: projectId,
+            sessionId,
+        }),
+        credentials: "include",
+    };
+};
+/**
  * Creates an object with a query and variables property to create a record on the server.
  * @param {String} id - Id of the domain.
  * @param {Object} input - Data that should be transferred to the server.
  * @returns {Object} Create record body.
  */
-const createRecordBody = function (id, input) {
+const createRecordBody = function (id, session, input) {
     return {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
             id,
+            session,
             input,
         }),
-        credentials: 'include',
+        credentials: "include",
     };
 };
 /**
@@ -116,12 +139,12 @@ const createRecordBody = function (id, input) {
  */
 const updateRecordBody = function (id) {
     return {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({ id }),
-        credentials: 'include',
+        credentials: "include",
     };
 };
 /**
@@ -130,17 +153,18 @@ const updateRecordBody = function (id) {
  * @param {Object} input - Data that should be transferred to the server.
  * @returns {Object} Create action body.
  */
-const createActionBody = function (id, input) {
+const createActionBody = function (id, session, input) {
     return {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
             id,
+            session,
             input,
         }),
-        credentials: 'include',
+        credentials: "include",
     };
 };
 /**
@@ -151,15 +175,15 @@ const createActionBody = function (id, input) {
  */
 const updateActionBody = function (id, input) {
     return {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
             id,
             input,
         }),
-        credentials: 'include',
+        credentials: "include",
     };
 };
 /**
@@ -175,12 +199,12 @@ const send = function (url, body, options, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             let response;
-            response = yield fetch(url, Object.assign(Object.assign({}, body), { credentials: options.ignoreOwnVisits ? 'include' : 'omit' }));
+            response = yield fetch(url, Object.assign(Object.assign({}, body), { credentials: options.ignoreOwnVisits ? "include" : "omit" }));
             if (!response.ok) {
                 console.error("Error sending tracker request");
             }
             const { id } = yield response.json();
-            if (typeof next === 'function') {
+            if (typeof next === "function") {
                 next(id);
             }
         }
@@ -194,15 +218,15 @@ const send = function (url, body, options, next) {
  * Fails silently.
  */
 const detect = function () {
-    const elem = document.querySelector('[data-strukt-domain-id]');
+    const elem = document.querySelector("[data-strukt-domain-id]");
     if (elem == null)
         return;
-    const server = elem.getAttribute('data-strukt-server') || '';
-    const id = elem.getAttribute('data-strukt-tracker-id');
-    const options = elem.getAttribute('data-strukt-opts') || '{}';
+    const server = elem.getAttribute("data-strukt-server") || "";
+    const id = elem.getAttribute("data-strukt-tracker-id");
+    const options = elem.getAttribute("data-strukt-opts") || "{}";
     if (server == null || id == null)
         return;
-    (0, exports.create)(JSON.parse(options)).record(id);
+    (0, exports.create)("tset", "test2", JSON.parse(options)).record();
 };
 exports.detect = detect;
 /**
@@ -212,9 +236,9 @@ exports.detect = detect;
  */
 const endpoint = function (server) {
     if (server == undefined)
-        return '';
-    const hasTrailingSlash = server.slice(-1) === '/';
-    const baseUrl = server + (hasTrailingSlash === true ? '' : '/') + '';
+        return "";
+    const hasTrailingSlash = server.slice(-1) === "/";
+    const baseUrl = server + (hasTrailingSlash === true ? "" : "/") + "";
     return baseUrl;
 };
 /**
@@ -223,7 +247,7 @@ const endpoint = function (server) {
  * @param {?Object} options
  * @returns {Object} instance
  */
-const create = function (options) {
+const create = function (projectId, sessionId = undefined, options) {
     options.recordPath = endpoint(options.server) + options.recordPath;
     options.actionPath = endpoint(options.server) + options.actionPath;
     const noop = () => { };
@@ -233,28 +257,32 @@ const create = function (options) {
         updateRecord: () => ({ stop: noop }),
         action: noop,
         updateAction: noop,
+        cleanup: noop,
     };
-    if (options.ignoreLocalhost === true && isLocalhost(location.hostname) === true) {
-        console.warn('strukt ignores you because you are on localhost');
+    if (options.ignoreLocalhost === true &&
+        isLocalhost(location.hostname) === true) {
+        console.warn("strukt ignores you because you are on localhost");
         return fakeInstance;
     }
     if (isBot(navigator.userAgent) === true) {
-        console.warn('strukt ignores you because you are a bot');
+        console.warn("strukt ignores you because you are a bot");
         return fakeInstance;
     }
     // Creates a new record on the server and updates the record
     // evry x seconds to track the duration of the visit. Tries to use
     // the default attributes when there're no custom attributes defined.
-    const _record = (id, attrs = (0, exports.attributes)(options === null || options === void 0 ? void 0 : options.detailed), next) => {
+    const _record = (attrs = (0, exports.attributes)(options === null || options === void 0 ? void 0 : options.detailed), next) => {
         var _a;
         // Function to stop updating the record
         let isStopped = false;
-        const stop = () => { isStopped = true; };
-        send(options.recordPath, createRecordBody(id, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true }, (recordId) => {
+        const stop = () => {
+            isStopped = true;
+        };
+        send(options.recordPath, createRecordBody(projectId, sessionId, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true }, (recordId) => {
             var _a;
-            console.log('record', recordId);
+            console.log("record", recordId);
             if (isFakeId(recordId) === true) {
-                return console.warn('strukt ignores you because this is your own site');
+                return console.warn("strukt ignores you because this is your own site");
             }
             const interval = setInterval(() => {
                 var _a;
@@ -264,9 +292,11 @@ const create = function (options) {
                 }
                 if (isInBackground() === true)
                     return;
-                send(options.recordPath, updateRecordBody(recordId), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true });
+                send(options.recordPath, updateRecordBody(recordId), {
+                    ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true,
+                });
             }, (_a = options.pollingInterval) !== null && _a !== void 0 ? _a : 2000);
-            if (typeof next === 'function') {
+            if (typeof next === "function") {
                 return next(recordId);
             }
         });
@@ -277,10 +307,12 @@ const create = function (options) {
         var _a;
         // Function to stop updating the record
         let isStopped = false;
-        const stop = () => { isStopped = true; };
-        console.log('updateRecord', recordId);
+        const stop = () => {
+            isStopped = true;
+        };
+        console.log("updateRecord", recordId);
         if (isFakeId(recordId) === true) {
-            console.warn('strukt ignores you because this is your own site');
+            console.warn("strukt ignores you because this is your own site");
             return { stop };
         }
         const interval = setInterval(() => {
@@ -291,18 +323,20 @@ const create = function (options) {
             }
             if (isInBackground() === true)
                 return;
-            send(options.recordPath, updateRecordBody(recordId), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true });
+            send(options.recordPath, updateRecordBody(recordId), {
+                ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true,
+            });
         }, (_a = options.pollingInterval) !== null && _a !== void 0 ? _a : 15000);
         return { stop };
     };
     // Creates a new action on the server
     const _action = (actionId, attrs, next) => {
         var _a;
-        send(options.actionPath, createActionBody(actionId, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true }, (actionId) => {
+        send(options.actionPath, createActionBody(actionId, sessionId, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true }, (actionId) => {
             if (isFakeId(actionId) === true) {
-                return console.warn('strukt ignores you because this is your own site');
+                return console.warn("strukt ignores you because this is your own site");
             }
-            if (typeof next === 'function') {
+            if (typeof next === "function") {
                 return next(actionId);
             }
         });
@@ -311,9 +345,18 @@ const create = function (options) {
     const _updateAction = (actionId, attrs) => {
         var _a;
         if (isFakeId(actionId) === true) {
-            return console.warn('strukt ignores you because this is your own site');
+            return console.warn("strukt ignores you because this is your own site");
         }
-        send(options.actionPath, updateActionBody(actionId, attrs), { ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true });
+        send(options.actionPath, updateActionBody(actionId, attrs), {
+            ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true,
+        });
+    };
+    // Updates an action
+    const _cleanup = (projectId, sessionId) => {
+        var _a;
+        send(options.recordPath, createCleanupBody(projectId, sessionId), {
+            ignoreOwnVisits: (_a = options === null || options === void 0 ? void 0 : options.ignoreOwnVisits) !== null && _a !== void 0 ? _a : true,
+        });
     };
     // Return the real instance
     return {
@@ -321,6 +364,7 @@ const create = function (options) {
         updateRecord: _updateRecord,
         action: _action,
         updateAction: _updateAction,
+        cleanup: _cleanup,
     };
 };
 exports.create = create;

@@ -1,8 +1,9 @@
 export interface TrackerOptions {
     /**
-     * The id of the tracker.
+     * The session ID can be used to track what a user does for the full
+     * lifecycle of their time on the site, can be ommited without issue
      */
-    projectId: string;
+    sessionId?: string;
     /**
      * The root URL of the http server.
      * For example: `https://analytics.strukt.io`.
@@ -55,6 +56,7 @@ export interface DefaultData {
     siteReferrer: string;
     source: string | undefined;
 }
+export type TrackerAttributes = DetailedData & DefaultData;
 /**
  * Gathers all platform-, screen- and user-related information.
  * This is the data that will be sent to the server. Once sent,
@@ -68,19 +70,21 @@ export declare const attributes: (detailed?: boolean) => (DefaultData & Detailed
  * Fails silently.
  */
 export declare const detect: () => void;
+export interface TrackerInstance {
+    record: (attributes?: TrackerAttributes, next?: (recordId: string) => void) => {
+        stop: () => void;
+    };
+    updateRecord: (recordId: string) => {
+        stop: () => void;
+    };
+    action: (eventId: string, attributes: TrackerAttributes, next?: (actionId: string) => void) => void;
+    updateAction: (actionId: string, attributes: TrackerAttributes) => void;
+    cleanup: (projectId: string, sessionId: string) => void;
+}
 /**
  * Creates a new instance.
  * @param {String} server - URL of the strukt server.
  * @param {?Object} options
  * @returns {Object} instance
  */
-export declare const create: (options: TrackerOptions) => {
-    record: (id: string, attrs?: DefaultData | (DefaultData & DetailedData), next?: ((recordId: string) => void) | undefined) => {
-        stop: () => void;
-    };
-    updateRecord: (recordId: string) => {
-        stop: () => void;
-    };
-    action: (actionId: string, attrs: Record<string, any>, next?: ((actionId: string) => void) | undefined) => void;
-    updateAction: (actionId: string, attrs: Record<string, any>) => void;
-};
+export declare const create: (projectId: string, sessionId: string | undefined, options: TrackerOptions) => TrackerInstance;
